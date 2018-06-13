@@ -32,12 +32,54 @@ ol, ul {
   width: 34px;
 }
 
-.square:focus {
-  outline: none;
+.number {
+  background-color: transparent;
+  color: #9b4dca;
+  border: 0.1rem solid #9b4dca;
+  border-radius: .4rem;
+  font-size: 1.1rem;
+  height: 3.8rem;
+  line-height: 3.8rem;
+  text-align: center;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 0 3rem;
 }
 
-.kbd-navigation .square:focus {
-  background: #ddd;
+.stats {
+  color: #ffffff;
+  background-color: transparent;
+  border: 0.1rem solid #606c76;
+  border-radius: .4rem;
+  padding: 0;
+  width: 100px;
+  height: 60px;
+  text-align: center;
+  margin-left: 1rem;
+}
+
+.pos {
+  display: inline-block;
+  background-color: #21ba45;
+  width: 50%;
+  height: 60%;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.neg {
+  display: inline-block;
+  background-color: #db2828;
+  width: 50%;
+  height: 60%;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.tot {
+  background-color: #eaae00;
+  height: 40%;
+  vertical-align: middle;
 }
 
 .game {
