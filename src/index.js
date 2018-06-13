@@ -37,25 +37,42 @@ class Game extends React.Component {
     this.state = {
       numbers: null,
       currentNumber: null,
+      enteredValue: '',
       correct: 0,
       wrong: 0,
       total: 0
     };
   }
 
-  updateInputValue(evt) {
-    console.log(evt.target.value);
+  updateInputValue(e) {
+    const guessNumber = parseInt(e.target.value);
+    this.setState({
+      enteredValue: guessNumber
+    });
+
+    if(e.target.value.length === this.state.numbers.length) {
+      if(guessNumber === this.state.currentNumber) {
+        this.setState({
+          correct: this.state.correct + 1
+        })
+      } else {
+        this.setState({
+          wrong: this.state.wrong + 1
+        });
+      }
+    }
   }
 
   generateNewNumber() {
     const numbers = Array.from(Array(6), () => getRandomInt(10));
-    const currentNumber = numbers.reduce((acc, val) => acc + val);
+    const currentNumber = numbers.reduce((acc, val, index) => acc + val*Math.pow(10, numbers.length-index-1), 0);
     console.log(numbers, currentNumber);
 
     this.setState({
       numbers: numbers,
       currentNumber: currentNumber,
-      total: this.state.total + 1
+      total: this.state.total + 1,
+      enteredValue: ''
     })
   }
 
@@ -70,14 +87,13 @@ class Game extends React.Component {
         <div className="game-board">
           <Display
             numbers={this.state.numbers}
-            onClick={(i) => this.handleClick(i)}
           />
         </div>
         <div className="answer">
-          <input type="text" onChange={evt => this.updateInputValue(evt)}/>
+          <input type="text" value={this.state.enteredValue} onChange={evt => this.updateInputValue(evt)}/>
         </div>
         <div className="controls">
-          <button>Next</button>
+          <button onClick={() => this.generateNewNumber()}>Next</button>
         </div>
         <div className="stats">
           <div>
@@ -89,19 +105,6 @@ class Game extends React.Component {
         </div>
       </div>
     );
-  }
-  handleClick(i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const squares = current.squares.slice();
-    squares[i] = this.state.xIsNext ? 'x' : 'o';
-    this.setState({
-      history: history.concat([{
-        squares: squares
-      }]),
-      stepNumber: history.length,
-      xIsNext: !this.state.xIsNext
-    })
   }
 }
 
