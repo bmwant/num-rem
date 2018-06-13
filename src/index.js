@@ -2,87 +2,90 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-function Square(props) {
+
+function Number(props) {
   return (
-    <button className="square" onClick={() => props.onClick()}>
+    <div className="number">
       {props.value}
-    </button>
+    </div>
   );
 }
 
-class Board extends React.Component {
-  renderSquare(i) {
-    return <Square value={this.props.squares[i]}
-                   onClick={() => this.props.onClick(i)}/>;
+class Display extends React.Component {
+  renderNumber(i) {
+    return <Number value={this.props.numbers[i]}/>;
   }
 
   render() {
     return (
-      <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+      <div className="display-row">
+        {this.renderNumber(0)}
+        {this.renderNumber(1)}
+        {this.renderNumber(2)}
+        {this.renderNumber(3)}
+        {this.renderNumber(4)}
+        {this.renderNumber(5)}
       </div>
-    );
+    )
   }
 }
+
 
 class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      history: [{
-        squares: Array(9).fill(null)
-      }],
-      stepNumber: 0,
-      xIsNext: true
-    }
+      numbers: null,
+      currentNumber: null,
+      correct: 0,
+      wrong: 0,
+      total: 0
+    };
   }
+
+  updateInputValue(evt) {
+    console.log(evt.target.value);
+  }
+
+  generateNewNumber() {
+    const numbers = Array.from(Array(6), () => getRandomInt(10));
+    const currentNumber = numbers.reduce((acc, val) => acc + val);
+    console.log(numbers, currentNumber);
+
+    this.setState({
+      numbers: numbers,
+      currentNumber: currentNumber,
+      total: this.state.total + 1
+    })
+  }
+
+  componentWillMount() {
+    // Set initial number
+    this.generateNewNumber();
+  }
+
   render() {
-    const history = this.state.history;
-    const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
-
-    const moves = history.map((step, move) => {
-      const desc = move ?
-        'Go to move #' + move :
-        'Go to game start';
-      return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
-        </li>
-      );
-    });
-
-    let status;
-    if (winner) {
-      status = 'Winner: ' + winner;
-    } else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'x' : 'o');
-    }
     return (
       <div className="game">
         <div className="game-board">
-          <Board
-            squares={current.squares}
+          <Display
+            numbers={this.state.numbers}
             onClick={(i) => this.handleClick(i)}
           />
         </div>
-        <div className="game-info">
-          <div>{status}</div>
-          <ol>{moves}</ol>
+        <div className="answer">
+          <input type="text" onChange={evt => this.updateInputValue(evt)}/>
+        </div>
+        <div className="controls">
+          <button>Next</button>
+        </div>
+        <div className="stats">
+          <div>
+            <strong>+/-:</strong> {this.state.correct}/{this.state.wrong}
+          </div>
+          <div>
+            <strong>total:</strong> {this.state.total}
+          </div>
         </div>
       </div>
     );
@@ -91,9 +94,6 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
-    if(calculateWinner(squares) || squares[i]) {
-      return;
-    }
     squares[i] = this.state.xIsNext ? 'x' : 'o';
     this.setState({
       history: history.concat([{
@@ -103,32 +103,10 @@ class Game extends React.Component {
       xIsNext: !this.state.xIsNext
     })
   }
-  jumpTo(step) {
-    this.setState({
-      stepNumber: step,
-      xIsNext: (step % 2) === 0,
-    });
-  }
 }
 
-function calculateWinner(squares) {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
-    }
-  }
-  return null;
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
 }
 // ========================================
 
